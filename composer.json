@@ -1,0 +1,26 @@
+{
+  "name": "gzdsx/sms-sdk",
+  "version": "1.0.0",
+  "description": "PHP SMS SDK",
+  "type": "library",
+  "license": "MIT",
+  "keywords": [],
+  "authors": [
+    {
+      "name": "xy113",
+      "email": "songdewei@163.com"
+    }
+  ],
+  "require": {
+    "php": "^7.0",
+    "ext-json": "*",
+    "tencentcloud/tencentcloud-sdk-php": "^3.0",
+    "alibabacloud/client": "^1.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "SmsSdk\\": "src/"
+    },
+    "files": []
+  }
+}
