@@ -18,6 +18,49 @@ use AlibabaCloud\Client\AlibabaCloud;
 
 class AliyunSmsClient extends AbstractDriver
 {
+    private static $defaultSignName;
+    private static $defaultTemplateCode;
+
+    private $templateCode;
+
+    /**
+     * @param $accessKeyId
+     * @param $accessSecret
+     * @throws \AlibabaCloud\Client\Exception\ClientException
+     */
+    public static function registerApp($accessKeyId, $accessSecret)
+    {
+        AlibabaCloud::accessKeyClient($accessKeyId, $accessSecret)
+            ->regionId('cn-hangzhou')
+            ->asDefaultClient();
+    }
+
+    /**
+     * @param mixed $defaultSignName
+     */
+    public static function setDefaultSignName($defaultSignName)
+    {
+        self::$defaultSignName = $defaultSignName;
+    }
+
+    /**
+     * @param mixed $defaultTemplateCode
+     */
+    public static function setDefaultTemplateCode($defaultTemplateCode)
+    {
+        self::$defaultTemplateCode = $defaultTemplateCode;
+    }
+
+    /**
+     * @param mixed $templateCode
+     * @return AliyunSmsClient
+     */
+    public function setTemplateCode($templateCode)
+    {
+        $this->templateCode = $templateCode;
+        return $this;
+    }
+
     /**
      * @return \AlibabaCloud\Client\Result\Result
      * @throws \AlibabaCloud\Client\Exception\ClientException
@@ -25,6 +68,8 @@ class AliyunSmsClient extends AbstractDriver
      */
     public function send()
     {
+        $signName = $this->signName ?: self::$defaultSignName;
+        $templateCode = $this->templateCode ?: self::$defaultTemplateCode;
         $phoneNumbers = is_array($this->phoneNumbers) ? implode(',', $this->phoneNumbers) : $this->phoneNumbers;
         return AlibabaCloud::rpc()
             ->product('Dysmsapi')
@@ -39,9 +84,9 @@ class AliyunSmsClient extends AbstractDriver
                     //上限为1000个手机号码。批量调用相对于单条调用及时性稍有延迟。
                     'PhoneNumbers' => $phoneNumbers,
                     //必填项 签名(需要在阿里云短信服务后台申请)
-                    'SignName' => $this->signName,
+                    'SignName' => $signName,
                     //必填项 短信模板code (需要在阿里云短信服务后台申请)
-                    'TemplateCode' => $this->templateId,
+                    'TemplateCode' => $templateCode,
                     //如果在短信中添加了${code} 变量则此项必填 要求为JSON格式
                     'TemplateParam' => json_encode($this->templateParam, 256),
                 ],

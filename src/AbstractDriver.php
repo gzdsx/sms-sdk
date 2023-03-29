@@ -20,17 +20,8 @@ namespace SmsSdk;
 abstract class AbstractDriver
 {
     protected $signName;
-    protected $templateId;
     protected $phoneNumbers;
     protected $templateParam = [];
-
-    /**
-     * @return mixed
-     */
-    public function getSignName()
-    {
-        return $this->signName;
-    }
 
     /**
      * @param string $signName
@@ -42,31 +33,6 @@ abstract class AbstractDriver
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getTemplateId()
-    {
-        return $this->templateId;
-    }
-
-    /**
-     * @param string $templateId
-     * @return AbstractDriver
-     */
-    public function setTemplateId($templateId)
-    {
-        $this->templateId = $templateId;
-        return $this;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getPhoneNumbers()
-    {
-        return $this->phoneNumbers;
-    }
 
     /**
      * @param mixed $phoneNumbers
@@ -76,14 +42,6 @@ abstract class AbstractDriver
     {
         $this->phoneNumbers = $phoneNumbers;
         return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getTemplateParam()
-    {
-        return $this->templateParam;
     }
 
     /**

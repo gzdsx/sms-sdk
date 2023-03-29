@@ -14,26 +14,28 @@
 namespace SmsSdk;
 
 
-use AlibabaCloud\Client\AlibabaCloud;
-
 class SmsSdk
 {
-    private static $tencentCloudSecretId;
-    private static $tencentCloudSecretKey;
-    private static $tencentCloudSmsSdkAppId;
-
-    public static function registerAliyun($accessKeyId, $accessSecret)
+    /**
+     * @param $accessKeyId
+     * @param $accessSecret
+     * @param null $defaultSignName
+     * @param null $defaultTemplateCode
+     * @throws \AlibabaCloud\Client\Exception\ClientException
+     */
+    public static function registerAliyun($accessKeyId, $accessSecret, $defaultSignName = null, $defaultTemplateCode = null)
     {
-        AlibabaCloud::accessKeyClient($accessKeyId, $accessSecret)
-            ->regionId('cn-hangzhou')
-            ->asDefaultClient();
+        AliyunSmsClient::registerApp($accessKeyId, $accessSecret);
+        AliyunSmsClient::setDefaultSignName($defaultSignName);
+        AliyunSmsClient::setDefaultTemplateCode($defaultTemplateCode);
     }
 
-    public static function registerTencentCloud($secretId, $secretKey, $smsSdkAppId)
+    public static function registerTencentCloud($secretId, $secretKey, $defaultSmsSdkAppId, $defaultSignName, $defaultTemplateId)
     {
-        self::$tencentCloudSecretId = $secretId;
-        self::$tencentCloudSecretKey = $secretKey;
-        self::$tencentCloudSmsSdkAppId = $smsSdkAppId;
+        TencentCloudSmsClient::registerApp($secretId, $secretKey);
+        TencentCloudSmsClient::setDefaultSmsSdkAppId($defaultSmsSdkAppId);
+        TencentCloudSmsClient::setDefaultSignName($defaultSignName);
+        TencentCloudSmsClient::setDefaultTemplateId($defaultTemplateId);
     }
 
     /**
@@ -49,9 +51,6 @@ class SmsSdk
      */
     public static function tencentCloud()
     {
-        return new TencentCloudSmsClient(
-            self::$tencentCloudSecretId,
-            self::$tencentCloudSecretKey,
-            self::$tencentCloudSmsSdkAppId);
+        return new TencentCloudSmsClient();
     }
 }

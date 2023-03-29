@@ -27,16 +27,99 @@ use TencentCloud\Common\Profile\HttpProfile;
 class TencentCloudSmsClient extends AbstractDriver
 {
 
-    protected $secretId;
-    protected $secretKey;
-    protected $smsSdkAppId;
+    private static $secretId;
+    private static $secretKey;
+    private static $defaultSmsSdkAppId;
+    private static $defaultSignName;
+    private static $defaultTemplateId;
 
-    public function __construct($secretId, $secretKey, $smsSdkAppId)
+    protected $smsSdkAppId;
+    protected $templateId;
+    protected $senderId = '';
+    protected $extendCode = '';
+    protected $sessionContext = '';
+
+
+    public static function registerApp($secretId, $secretKey)
     {
-        $this->secretId = $secretId;
-        $this->secretKey = $secretKey;
-        $this->smsSdkAppId = $smsSdkAppId;
+        self::$secretId = $secretId;
+        self::$secretKey = $secretKey;
     }
+
+    /**
+     * @param mixed $defaultSmsSdkAppId
+     */
+    public static function setDefaultSmsSdkAppId($defaultSmsSdkAppId)
+    {
+        self::$defaultSmsSdkAppId = $defaultSmsSdkAppId;
+    }
+
+    /**
+     * @param mixed $defaultSignName
+     */
+    public static function setDefaultSignName($defaultSignName)
+    {
+        self::$defaultSignName = $defaultSignName;
+    }
+
+    /**
+     * @param mixed $defaultTemplateId
+     */
+    public static function setDefaultTemplateId($defaultTemplateId)
+    {
+        self::$defaultTemplateId = $defaultTemplateId;
+    }
+
+    /**
+     * @param mixed $smsSdkAppId
+     * @return TencentCloudSmsClient
+     */
+    public function setSmsSdkAppId($smsSdkAppId)
+    {
+        $this->smsSdkAppId = $smsSdkAppId;
+        return $this;
+    }
+
+    /**
+     * @param mixed $templateId
+     * @return TencentCloudSmsClient
+     */
+    public function setTemplateId($templateId)
+    {
+        $this->templateId = $templateId;
+        return $this;
+    }
+
+    /**
+     * @param string $senderId
+     * @return TencentCloudSmsClient
+     */
+    public function setSenderId(string $senderId): TencentCloudSmsClient
+    {
+        $this->senderId = $senderId;
+        return $this;
+    }
+
+    /**
+     * @param string $extendCode
+     * @return TencentCloudSmsClient
+     */
+    public function setExtendCode(string $extendCode): TencentCloudSmsClient
+    {
+        $this->extendCode = $extendCode;
+        return $this;
+    }
+
+    /**
+     * @param string $sessionContext
+     * @return TencentCloudSmsClient
+     */
+    public function setSessionContext(string $sessionContext): TencentCloudSmsClient
+    {
+        $this->sessionContext = $sessionContext;
+        return $this;
+    }
+
 
     /**
      * @return \TencentCloud\Sms\V20210111\Models\SendSmsResponse
@@ -51,7 +134,7 @@ class TencentCloudSmsClient extends AbstractDriver
          * CAM密匙查询: https://console.cloud.tencent.com/cam/capi
          */
 
-        $cred = new Credential($this->secretId, $this->secretKey);
+        $cred = new Credential(self::$secretId, self::$secretKey);
 
         // 实例化一个http选项，可选的，没有特殊需求可以跳过
         $httpProfile = new HttpProfile();
@@ -81,20 +164,20 @@ class TencentCloudSmsClient extends AbstractDriver
          * sms helper: https://cloud.tencent.com/document/product/382/3773 */
 
         /* 短信应用ID: 短信SdkAppId在 [短信控制台] 添加应用后生成的实际SdkAppId，示例如1400006666 */
-        $req->SmsSdkAppId = $this->smsSdkAppId;
+        $req->SmsSdkAppId = $this->smsSdkAppId ?: self::$defaultSmsSdkAppId;
         /* 短信签名内容: 使用 UTF-8 编码，必须填写已审核通过的签名，签名信息可登录 [短信控制台] 查看 */
-        $req->SignName = $this->signName;
+        $req->SignName = $this->signName ?: self::$defaultSignName;
         /* 短信码号扩展号: 默认未开通，如需开通请联系 [sms helper] */
-        $req->ExtendCode = "";
+        $req->ExtendCode = $this->extendCode;
         /* 下发手机号码，采用 E.164 标准，+[国家或地区码][手机号]
          * 示例如：+8613711112222， 其中前面有一个+号 ，86为国家码，13711112222为手机号，最多不要超过200个手机号*/
         $req->PhoneNumberSet = $this->phoneNumbers;
         /* 国际/港澳台短信 SenderId: 国内短信填空，默认未开通，如需开通请联系 [sms helper] */
-        $req->SenderId = "";
+        $req->SenderId = $this->senderId;
         /* 用户的 session 内容: 可以携带用户侧 ID 等上下文信息，server 会原样返回 */
-        $req->SessionContext = "";
+        $req->SessionContext = $this->sessionContext;
         /* 模板 ID: 必须填写已审核通过的模板 ID。模板ID可登录 [短信控制台] 查看 */
-        $req->TemplateId = $this->templateId;
+        $req->TemplateId = $this->templateId ?: self::$defaultTemplateId;
         /* 模板参数: 若无模板参数，则设置为空*/
         $req->TemplateParamSet = $this->templateParam;
 
