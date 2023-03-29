@@ -7,7 +7,7 @@
 ### 注册APP
 
 
-在应用入口处注册，如Laravel的AppSericeProvider的boot出
+在应用入口处注册，如Laravel的AppSericeProvider的boot处
 
 1.阿里云注册
 ```php
